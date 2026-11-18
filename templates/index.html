@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reserva de Laboratório — UAB</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#f4f6f9;color:#1e293b;line-height:1.45}
+  header{background:linear-gradient(135deg,#0b4f9e,#1565c0);color:#fff;padding:16px;position:relative}
+  .h-in{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:16px;padding-right:220px}
+  .h-in img{height:64px; border-radius:6px; background:#fff; padding:4px; object-fit:contain}
+  .h-txt h1{margin:0;font-size:1.18rem;font-weight:600}
+  .h-txt p{margin:2px 0 0;font-size:.82rem;opacity:.9}
+  .modo{position:absolute;top:14px;right:14px;display:flex;align-items:center;gap:6px;
+    background:#ffffff22;border:1px solid #ffffff55;color:#fff;padding:5px 10px;border-radius:20px;font-size:.72rem;font-weight:600}
+  .modo .dot{width:8px;height:8px;border-radius:50%;background:#94a3b8}
+  .modo.online .dot{background:#4ade80}
+  .modo.offline .dot{background:#fbbf24}
+  .wrap{max-width:1100px;margin:0 auto;padding:16px}
+  .barra{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-bottom:14px}
+  .campo label{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em;color:#64748b;margin-bottom:4px;font-weight:700}
+  input,select,textarea{font:inherit;padding:9px 11px;border:1px solid #d9e0ea;border-radius:9px;background:#fff;color:inherit}
+  input:focus,select:focus,textarea:focus{outline:3px solid #0b4f9e26;border-color:#0b4f9e}
+  .btn{border:1px solid #d9e0ea;background:#fff;border-radius:9px;padding:9px 14px;font:inherit;font-size:.88rem;cursor:pointer;color:#334155}
+  .btn:hover{background:#f1f5f9}
+  .btn-prim{background:#0b4f9e;border-color:#0b4f9e;color:#fff;font-weight:600}
+  .btn-prim:hover{background:#083c78}
+  .btn-perigo{background:#b0342a;border-color:#b0342a;color:#fff;font-weight:600}
+  .btn-perigo:hover{background:#8e2720}
+  .badge{background:#12805c;color:#fff;padding:5px 10px;border-radius:20px;font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+  .tabela-wrap{overflow-x:auto;border-radius:12px;box-shadow:0 1px 3px rgba(15,23,42,.09)}
+  table{width:100%;border-collapse:collapse;background:#fff;min-width:470px}
+  th,td{padding:10px;border-bottom:1px solid #e6ebf2;text-align:left;font-size:.9rem;vertical-align:middle}
+  thead th{background:#e8f0fb;color:#083c78;font-size:.74rem;text-transform:uppercase;letter-spacing:.04em}
+  tbody th{background:#f8fafc;font-weight:600;color:#0b4f9e;font-size:.85rem;white-space:nowrap;width:180px}
+  tbody th small{display:block;color:#64748b;font-weight:400;font-size:.72rem;margin-top:2px}
+  tbody tr:last-child th,tbody tr:last-child td{border-bottom:none}
+  .slot{width:100%;padding:14px 8px;border:none;border-radius:8px;background:#e3f6ee;color:#12805c;font:inherit;font-size:.88rem;font-weight:700;cursor:pointer}
+  .slot:hover{background:#cdeee0}
+  .slot.bloqueado{background:#eef1f5;color:#94a3b8;cursor:not-allowed;font-weight:500}
+  .ocupado{background:#fdecea;border-left:3px solid #b0342a;border-radius:7px;padding:8px 10px;cursor:pointer}
+  .ocupado b{display:block;font-size:.86rem}
+  .ocupado span{font-size:.74rem;color:#64748b;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:220px}
+  .ocupado .rec{display:inline-block;background:#b0342a;color:#fff;font-size:.62rem;padding:1px 5px;border-radius:4px;margin-left:4px;font-weight:700;vertical-align:1px}
+  .legenda{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px;font-size:.78rem;color:#64748b}
+  .legenda i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+  .aviso-offline{margin-top:14px;padding:10px 14px;background:#fff8e1;border:1px solid #ffe082;border-radius:9px;font-size:.82rem;color:#7a5a00}
+  dialog{border:none;border-radius:14px;padding:0;max-width:480px;width:calc(100% - 28px);box-shadow:0 24px 60px rgba(15,23,42,.3)}
+  dialog::backdrop{background:rgba(15,23,42,.55)}
+  .dlg-head{background:#0b4f9e;color:#fff;padding:15px 18px}
+  .dlg-head h2{margin:0;font-size:1.02rem}
+  .dlg-head p{margin:3px 0 0;font-size:.8rem;opacity:.9}
+  .dlg-body{padding:16px 18px;display:grid;gap:11px}
+  .dlg-body label{display:block;font-size:.78rem;font-weight:700;color:#475569;margin-bottom:4px}
+  .dlg-body input,.dlg-body textarea,.dlg-body select{width:100%}
+  .dlg-foot{padding:0 18px 16px;display:flex;gap:9px;justify-content:flex-end;flex-wrap:wrap}
+  .erro{color:#b0342a;font-size:.82rem;margin:0;min-height:1.1em;font-weight:600}
+  .detalhe{margin:0}
+  .detalhe dt{color:#64748b;font-size:.7rem;text-transform:uppercase;letter-spacing:.04em;font-weight:700;margin-top:8px}
+  .detalhe dd{margin:0;font-weight:500;font-size:.9rem;word-break:break-word}
+  .linha-dupla{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+  .checkbox-label{display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:600;font-size:.88rem;color:#334155}
+  .preview-datas{background:#f8fafc;border:1px solid #e2e8f0;border-radius:7px;padding:8px 10px;font-size:.78rem;color:#475569;max-height:100px;overflow-y:auto;line-height:1.6}
+  .preview-datas b{color:#0b4f9e}
+  .preview-datas em{color:#94a3b8}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-in">
+    <img src="logo.png" alt="Logo UAB">
+    <div class="h-txt">
+      <h1>Reserva de Laboratório — UAB</h1>
+      <p>Selecione a data e clique no turno desejado.</p>
+    </div>
+  </div>
+  <div class="modo" id="modo" title="Verificando...">
+    <span class="dot"></span><span id="modoTexto">Verificando...</span>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="barra">
+    <button class="btn" id="btnAnterior">◀</button>
+    <div class="campo"><label for="data">Data</label><input type="date" id="data"></div>
+    <button class="btn" id="btnProximo">▶</button>
+    <button class="btn" id="btnHoje">Hoje</button>
+    <div style="flex:1"></div>
+    <span id="badgeAdmin" class="badge" hidden>Administrador</span>
+    <button class="btn" id="btnExportar" hidden>Exportar CSV</button>
+    <button class="btn" id="btnConfig" hidden>Configurações</button>
+    <button class="btn btn-perigo" id="btnSair" hidden>Encerrar sistema</button>
+    <button class="btn btn-prim" id="btnAdmin">Entrar como admin</button>
+  </div>
+
+  <div class="tabela-wrap">
+    <table><thead id="thead"></thead><tbody id="tbody"></tbody></table>
+  </div>
+
+  <div class="legenda">
+    <span><i style="background:#e3f6ee;border:1px solid #12805c"></i>Livre</span>
+    <span><i style="background:#fdecea;border:1px solid #b0342a"></i>Reservado</span>
+    <span><i style="background:#eef1f5;border:1px solid #94a3b8"></i>Encerrado</span>
+  </div>
+
+  <div id="avisoOffline" class="aviso-offline" hidden>
+    <b>Modo local:</b> os dados ficam salvos apenas neste navegador. Para compartilhar entre computadores, inicie o <code>Reserva-UAB.exe</code> (ou rode <code>python app.py</code>) e acesse pelo endereço que ele abrir.
+  </div>
+</div>
+
+<!-- Nova reserva -->
+<dialog id="dlgNova">
+  <form id="formNova" novalidate>
+    <div class="dlg-head"><h2>Nova reserva</h2><p id="novaInfo"></p></div>
+    <div class="dlg-body">
+      <div><label>Solicitante *</label><input id="fSolicitante" placeholder="Nome de quem vai usar" required></div>
+      <div><label>Atendente *</label><input id="fAtendente" placeholder="Seu nome" required></div>
+      <div><label>Finalidade *</label><textarea id="fFinalidade" rows="2" placeholder="Ex.: Curso de Libras" required></textarea></div>
+
+      <div>
+        <label for="fRepeticao">Repetição</label>
+        <select id="fRepeticao">
+          <option value="nenhuma">Não repetir (apenas este dia)</option>
+          <option value="semestre">Repetir semanalmente até o fim do semestre</option>
+          <option value="data">Repetir semanalmente até uma data específica</option>
+        </select>
+      </div>
+
+      <div id="repDataBox" hidden>
+        <label for="fDataFim">Repetir até *</label>
+        <input type="date" id="fDataFim">
+      </div>
+
+      <div class="preview-datas" id="previewDatas"></div>
+
+      <p class="erro" id="novaErro"></p>
+    </div>
+    <div class="dlg-foot">
+      <button type="button" class="btn" data-fechar>Cancelar</button>
+      <button type="submit" class="btn btn-prim">Confirmar reserva</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Detalhes -->
+<dialog id="dlgDetalhe">
+  <div class="dlg-head"><h2>Detalhes da reserva</h2><p id="detInfo"></p></div>
+  <div class="dlg-body"><dl class="detalhe" id="detConteudo"></dl></div>
+  <div class="dlg-foot">
+    <button type="button" class="btn" data-fechar>Fechar</button>
+    <button type="button" class="btn btn-perigo" id="btnCancelarRes">Cancelar reserva</button>
+  </div>
+</dialog>
+
+<!-- Login admin -->
+<dialog id="dlgLogin">
+  <form id="formLogin" novalidate>
+    <div class="dlg-head"><h2>Modo administrador</h2><p>Informe a senha de gerenciamento.</p></div>
+    <div class="dlg-body">
+      <div><label for="fSenha">Senha</label><input type="password" id="fSenha"></div>
+      <p class="erro" id="loginErro"></p>
+    </div>
+    <div class="dlg-foot">
+      <button type="button" class="btn" data-fechar>Cancelar</button>
+      <button type="submit" class="btn btn-prim">Entrar</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Configurações -->
+<dialog id="dlgConfig">
+  <form id="formConfig" novalidate>
+    <div class="dlg-head"><h2>Configurações</h2></div>
+    <div class="dlg-body">
+      <div><label for="cSenha">Nova senha de administrador (opcional)</label>
+        <input type="password" id="cSenha" placeholder="Deixe em branco para manter">
+      </div>
+      <p class="erro" id="configErro"></p>
+    </div>
+    <div class="dlg-foot">
+      <button type="button" class="btn" data-fechar>Cancelar</button>
+      <button type="submit" class="btn btn-prim">Salvar</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+const DEFAULT_CONFIG = {
+  turnos: [
+    {id:"matutino",   nome:"Matutino",   inicio:"08:00", fim:"12:00"},
+    {id:"vespertino", nome:"Vespertino", inicio:"13:00", fim:"17:00"},
+    {id:"noturno",    nome:"Noturno",    inicio:"18:00", fim:"22:00"}
+  ],
+  admin_senha: "admin123"
+};
+const KEY_CONFIG    = "uab_config_v4";
+const KEY_RESERVAS  = "uab_reservas_v4";
+const KEY_ADMIN     = "uab_admin_session";
+const KEY_ATENDENTE = "uab_atendente";
+
+let USE_API = false;
+let CONFIG = null;
+let estado = { data: hojeISO() };
+let admin = false;
+let pendente = null;
+let detalheAtual = null;
+
+/* ===== Helpers ===== */
+function hojeISO(){
+  const d = new Date();
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+function formatarData(iso){const [a,m,d]=iso.split("-");return d+"/"+m+"/"+a;}
+function esc(t){return String(t??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function diaSemanaDe(dataISO){
+  const [a,m,d]=dataISO.split("-").map(Number);
+  return new Date(a,m-1,d).getDay();
+}
+function nomeDiaSemana(dia){
+  return ["Domingo","Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado"][dia];
+}
+function somarDias(iso, n){
+  const [a,m,d]=iso.split("-").map(Number);
+  const dt=new Date(a,m-1,d); dt.setDate(dt.getDate()+n);
+  return dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-"+String(dt.getDate()).padStart(2,"0");
+}
+function getTurno(id){ return CONFIG.turnos.find(t => t.id === id); }
+function turnoPassou(dataISO, turnoId){
+  const [a,m,d] = dataISO.split("-").map(Number);
+  const agora = new Date();
+  const hoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
+  const dataObj = new Date(a, m-1, d);
+  if (dataObj < hoje) return true;
+  if (dataObj.getTime() === hoje.getTime()){
+    const info = getTurno(turnoId);
+    if (!info) return false;
+    const [h, mi] = info.fim.split(":").map(Number);
+    return agora >= new Date(a, m-1, d, h, mi, 0, 0);
+  }
+  return false;
+}
+
+/* ===== Fim do semestre ===== */
+function calcularFimSemestre(dataISO){
+  const [a, m, d] = dataISO.split("-").map(Number);
+  if (m >= 2 && m <= 6) return `${a}-06-30`;
+  if (m >= 8 && m <= 12){
+    if (m === 12 && d > 15) return `${a+1}-06-30`;
+    return `${a}-12-15`;
+  }
+  if (m === 1) return `${a}-06-30`;
+  if (m === 7) return `${a}-12-15`;
+  return `${a}-06-30`;
+}
+
+/* ===== Datas recorrentes ===== */
+function calcularDatasRecorrentes(baseISO, diaSemana, fimISO){
+  const set = new Set([baseISO]);
+  const [af,mf,df] = fimISO.split("-").map(Number);
+  const fim = new Date(af, mf-1, df);
+  let cursor = (()=>{
+    const [a,m,d]=baseISO.split("-").map(Number);
+    const dt = new Date(a,m-1,d); dt.setDate(dt.getDate()+1); return dt;
+  })();
+  while (cursor <= fim){
+    if (cursor.getDay() === diaSemana){
+      const iso = cursor.getFullYear()+"-"+String(cursor.getMonth()+1).padStart(2,"0")+"-"+String(cursor.getDate()).padStart(2,"0");
+      set.add(iso);
+    }
+    cursor.setDate(cursor.getDate()+1);
+  }
+  return Array.from(set).sort();
+}
+
+/* ===== Storage local ===== */
+function carregarConfigLocal(){
+  try{
+    const s = localStorage.getItem(KEY_CONFIG);
+    if(s){const c = JSON.parse(s); return {...DEFAULT_CONFIG, ...c};}
+  }catch(e){}
+  try{localStorage.setItem(KEY_CONFIG, JSON.stringify(DEFAULT_CONFIG));}catch(e){}
+  return {...DEFAULT_CONFIG};
+}
+function salvarConfigLocal(cfg){try{localStorage.setItem(KEY_CONFIG,JSON.stringify(cfg));}catch(e){}}
+function carregarReservasLocal(){
+  try{return JSON.parse(localStorage.getItem(KEY_RESERVAS)||"[]");}catch(e){return[];}
+}
+function salvarReservasLocal(l){try{localStorage.setItem(KEY_RESERVAS,JSON.stringify(l));}catch(e){}}
+
+/* ===== API ===== */
+async function api(url,opts){
+  const r = await fetch(url,opts);
+  let j = {};
+  try{j = await r.json();}catch(e){}
+  if(!r.ok) throw new Error(j.erro||("Erro "+r.status));
+  return j;
+}
+
+async function detectarBackend(){
+  if (location.protocol === 'file:'){
+    USE_API = false;
+    CONFIG = carregarConfigLocal();
+    admin = sessionStorage.getItem(KEY_ADMIN) === "1";
+    return;
+  }
+  try{
+    const ctrl = new AbortController();
+    const t = setTimeout(()=>ctrl.abort(), 900);
+    const r = await fetch("/api/config",{signal:ctrl.signal});
+    clearTimeout(t);
+    if(r.ok){
+      const j = await r.json();
+      if(j && Array.isArray(j.turnos)){
+        USE_API = true;
+        CONFIG = j;
+        try{
+          const st = await fetch("/api/status").then(x=>x.json());
+          admin = !!st.admin;
+        }catch(e){ admin = false; }
+        return;
+      }
+    }
+  }catch(e){}
+  USE_API = false;
+  CONFIG = carregarConfigLocal();
+  admin = sessionStorage.getItem(KEY_ADMIN)==="1";
+}
+
+/* ===== Dados unificados ===== */
+async function obterReservasDoDia(data){
+  if(USE_API) return await api("/api/reservas?data="+encodeURIComponent(data));
+  return carregarReservasLocal().filter(r => r.data === data);
+}
+async function criarReserva(dados){
+  if(USE_API){
+    return await api("/api/reservas",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(dados)});
+  }
+  const todas = carregarReservasLocal();
+  if(todas.some(r => r.data===dados.data && r.turno===dados.turno))
+    throw new Error("Turno já reservado.");
+  const grupo_id = dados.grupo_id || ("g"+Date.now()+"-"+Math.random().toString(36).slice(2,8));
+  todas.push({
+    ...dados,
+    grupo_id,
+    id: Date.now()+"-"+Math.random().toString(36).slice(2,8),
+    criado_em: new Date().toISOString()
+  });
+  salvarReservasLocal(todas);
+  return {ok:true, grupo_id};
+}
+async function apagarGrupo(grupo_id){
+  if(USE_API) return await api("/api/grupos/"+grupo_id,{method:"DELETE"});
+  salvarReservasLocal(carregarReservasLocal().filter(r => r.grupo_id !== grupo_id));
+  return {ok:true};
+}
+
+/* ===== Admin ===== */
+async function entrarAdmin(senha){
+  if(USE_API){
+    await api("/api/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({senha})});
+  }else{
+    if(senha !== CONFIG.admin_senha) throw new Error("Senha incorreta.");
+    sessionStorage.setItem(KEY_ADMIN,"1");
+  }
+  admin = true;
+}
+async function sairAdmin(){
+  if(USE_API){ try{await api("/api/logout",{method:"POST"});}catch(e){} }
+  else sessionStorage.removeItem(KEY_ADMIN);
+  admin = false;
+}
+async function salvarConfigAPI(payload){
+  if(USE_API){
+    await api("/api/config",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+    CONFIG = await api("/api/config");
+  }else{
+    const novo = {...CONFIG};
+    if(payload.admin_senha) novo.admin_senha = payload.admin_senha;
+    CONFIG = novo;
+    salvarConfigLocal(novo);
+  }
+}
+
+/* ===== Render da grade ===== */
+async function render(){
+  let reservas = [];
+  try{ reservas = await obterReservasDoDia(estado.data); }
+  catch(e){ console.error(e); reservas = []; }
+
+  const thead = document.getElementById("thead"), tbody = document.getElementById("tbody");
+  thead.innerHTML = "<tr><th>Turno</th><th>Laboratório UAB</th></tr>";
+  tbody.innerHTML = "";
+
+  CONFIG.turnos.forEach(t => {
+    const tr = document.createElement("tr");
+    const th = document.createElement("th");
+    th.innerHTML = esc(t.nome) + "<small>" + t.inicio + " – " + t.fim + "</small>";
+    tr.appendChild(th);
+
+    const td = document.createElement("td");
+    const r = reservas.find(x => x.turno === t.id);
+
+    if (r){
+      const div = document.createElement("div");
+      div.className = "ocupado";
+      const rec = r.recorrente ? '<span class="rec">SEMANAL</span>' : "";
+      div.innerHTML =
+        "<b>" + esc(r.nome) + rec + "</b>" +
+        "<span>" + esc(r.finalidade) + "</span>" +
+        "<span style='font-size:0.7rem;color:#94a3b8'>Atend.: " + esc(r.atendente || "—") + "</span>";
+      div.onclick = () => abrirDetalhe(r);
+      td.appendChild(div);
+    } else if (turnoPassou(estado.data, t.id)){
+      const div = document.createElement("div");
+      div.className = "slot bloqueado";
+      div.textContent = "Encerrado";
+      td.appendChild(div);
+    } else {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "slot";
+      b.textContent = "Livre";
+      b.onclick = () => abrirNova(t.id);
+      td.appendChild(b);
+    }
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+  });
+}
+
+/* ===== Modal nova reserva ===== */
+function abrirNova(turno){
+  if (turnoPassou(estado.data, turno)) return;
+  pendente = { turno, data: estado.data };
+
+  const t = getTurno(turno);
+  document.getElementById("novaInfo").textContent =
+    "Laboratório UAB • " + formatarData(estado.data) + " • " + t.nome + " (" + t.inicio + "–" + t.fim + ")";
+
+  document.getElementById("formNova").reset();
+  document.getElementById("novaErro").textContent = "";
+  document.getElementById("fAtendente").value = localStorage.getItem(KEY_ATENDENTE) || "";
+  document.getElementById("fRepeticao").value = "nenhuma";
+  document.getElementById("repDataBox").hidden = true;
+  document.getElementById("previewDatas").innerHTML = "";
+
+  document.getElementById("dlgNova").showModal();
+  setTimeout(() => document.getElementById("fSolicitante").focus(), 50);
+}
+
+/* Preview da repetição */
+function atualizarPreview(){
+  const rep = document.getElementById("fRepeticao").value;
+  const box = document.getElementById("previewDatas");
+  const dataBase = estado.data;
+  const diaSem = diaSemanaDe(dataBase);
+  const nomeDia = nomeDiaSemana(diaSem);
+
+  if (rep === "nenhuma"){ box.innerHTML = ""; return; }
+
+  let fim;
+  if (rep === "semestre"){
+    fim = calcularFimSemestre(dataBase);
+  } else {
+    fim = document.getElementById("fDataFim").value;
+    if (!fim){ box.innerHTML = "<em>Escolha a data final.</em>"; return; }
+    if (fim < dataBase){ box.innerHTML = "<em>A data final deve ser depois da data inicial.</em>"; return; }
+  }
+
+  const datas = calcularDatasRecorrentes(dataBase, diaSem, fim);
+  box.innerHTML = "<b>Toda " + nomeDia + " — " + datas.length + " reserva(s):</b><br>" +
+    datas.map(d => formatarData(d)).join(", ");
+}
+
+document.getElementById("fRepeticao").addEventListener("change", e => {
+  document.getElementById("repDataBox").hidden = e.target.value !== "data";
+  atualizarPreview();
+});
+document.getElementById("fDataFim").addEventListener("change", atualizarPreview);
+
+document.getElementById("formNova").addEventListener("submit", async e => {
+  e.preventDefault();
+  const erroEl = document.getElementById("novaErro"); erroEl.textContent = "";
+
+  const solicitante = document.getElementById("fSolicitante").value.trim();
+  const atendente   = document.getElementById("fAtendente").value.trim();
+  const finalidade  = document.getElementById("fFinalidade").value.trim();
+  const rep         = document.getElementById("fRepeticao").value;
+
+  if (!solicitante || !atendente || !finalidade){
+    erroEl.textContent = "Preencha solicitante, atendente e finalidade.";
+    return;
+  }
+
+  localStorage.setItem(KEY_ATENDENTE, atendente);
+
+  // Montar datas
+  let datas = [estado.data];
+  if (rep !== "nenhuma"){
+    const dataBase = estado.data;
+    let fim;
+    if (rep === "semestre"){
+      fim = calcularFimSemestre(dataBase);
+    } else {
+      fim = document.getElementById("fDataFim").value;
+      if (!fim){ erroEl.textContent = "Informe a data final."; return; }
+      if (fim < dataBase){ erroEl.textContent = "Data final antes da inicial."; return; }
+    }
+    datas = calcularDatasRecorrentes(dataBase, diaSemanaDe(dataBase), fim);
+    const agora = new Date();
+    datas = datas.filter(d => {
+      if (d === dataBase) return true;
+      const [a,m,dd] = d.split("-").map(Number);
+      return new Date(a, m-1, dd) >= agora;
+    });
+  }
+
+  if (datas.length === 0){ erroEl.textContent = "Nenhuma data válida."; return; }
+
+  const grupo_id = "g" + Date.now() + "-" + Math.random().toString(36).slice(2,8);
+  const resultados = [];
+  for (const data of datas){
+    try{
+      await criarReserva({
+        data,
+        sala: "Laboratório UAB",
+        turno: pendente.turno,
+        nome: solicitante,
+        atendente,
+        finalidade,
+        recorrente: rep !== "nenhuma",
+        grupo_id
+      });
+      resultados.push({ ok:true, data });
+    }catch(err){
+      resultados.push({ ok:false, data, erro:err.message });
+    }
+  }
+
+  document.getElementById("dlgNova").close();
+  await render();
+
+  const sucessos = resultados.filter(r => r.ok);
+  const falhas   = resultados.filter(r => !r.ok);
+
+  if (falhas.length === 0){
+    if (sucessos.length > 1) alert(sucessos.length + " reservas criadas com sucesso.");
+    return;
+  }
+  let msg = sucessos.length + " reserva(s) criada(s).\n\n";
+  msg += falhas.length + " falhou(aram):\n";
+  falhas.slice(0,8).forEach(f => { msg += "• " + formatarData(f.data) + ": " + f.erro + "\n"; });
+  if (falhas.length > 8) msg += "... e mais " + (falhas.length-8);
+  alert(msg);
+});
+
+/* ===== Detalhes / cancelar ===== */
+function abrirDetalhe(r){
+  detalheAtual = r;
+  const t = getTurno(r.turno);
+  document.getElementById("detInfo").textContent =
+    "Laboratório UAB • " + formatarData(r.data) + " • " + (t ? t.nome : r.turno);
+  document.getElementById("detConteudo").innerHTML =
+    "<dt>Solicitante</dt><dd>" + esc(r.nome) + "</dd>" +
+    "<dt>Atendente</dt><dd>" + esc(r.atendente || "—") + "</dd>" +
+    "<dt>Finalidade</dt><dd>" + esc(r.finalidade) + "</dd>" +
+    (r.recorrente ? "<dt>Tipo</dt><dd>Reserva recorrente (semanal)</dd>" : "");
+  document.getElementById("btnCancelarRes").style.display = admin ? "" : "none";
+  document.getElementById("dlgDetalhe").showModal();
+}
+
+document.getElementById("btnCancelarRes").addEventListener("click", async () => {
+  if (!confirm("Cancelar esta reserva? Se ela fizer parte de uma repetição semanal, TODAS as datas do grupo serão removidas.")) return;
+  try{
+    if (detalheAtual.grupo_id){
+      await apagarGrupo(detalheAtual.grupo_id);
+    } else {
+      if (USE_API){
+        await api("/api/grupos/"+detalheAtual.id,{method:"DELETE"});
+      } else {
+        salvarReservasLocal(carregarReservasLocal().filter(x => x.id !== detalheAtual.id));
+      }
+    }
+    document.getElementById("dlgDetalhe").close();
+    await render();
+  }catch(e){ alert(e.message); }
+});
+
+/* ===== Admin UI ===== */
+function atualizarAdminUI(){
+  document.getElementById("badgeAdmin").hidden = !admin;
+  document.getElementById("btnExportar").hidden = !admin;
+  document.getElementById("btnConfig").hidden = !admin;
+  document.getElementById("btnSair").hidden = !admin;
+  document.getElementById("btnAdmin").textContent = admin ? "Sair do modo admin" : "Entrar como admin";
+  document.getElementById("btnSair").style.display = (admin && USE_API) ? "" : "none";
+  document.getElementById("avisoOffline").hidden = USE_API;
+
+  const modoEl = document.getElementById("modo");
+  modoEl.className = "modo " + (USE_API ? "online" : "offline");
+  document.getElementById("modoTexto").textContent = USE_API ? "Servidor (multiusuário)" : "Local (só neste PC)";
+}
+
+document.getElementById("btnAdmin").addEventListener("click", async () => {
+  if (admin){ await sairAdmin(); atualizarAdminUI(); await render(); return; }
+  document.getElementById("formLogin").reset();
+  document.getElementById("loginErro").textContent = "";
+  document.getElementById("dlgLogin").showModal();
+  setTimeout(() => document.getElementById("fSenha").focus(), 50);
+});
+
+document.getElementById("formLogin").addEventListener("submit", async e => {
+  e.preventDefault();
+  const erroEl = document.getElementById("loginErro"); erroEl.textContent = "";
+  try{
+    await entrarAdmin(document.getElementById("fSenha").value);
+    document.getElementById("dlgLogin").close();
+    atualizarAdminUI();
+    await render();
+  }catch(err){ erroEl.textContent = err.message; }
+});
+
+/* ===== Configurações ===== */
+document.getElementById("btnConfig").addEventListener("click", () => {
+  document.getElementById("cSenha").value = "";
+  document.getElementById("configErro").textContent = "";
+  document.getElementById("dlgConfig").showModal();
+});
+
+document.getElementById("formConfig").addEventListener("submit", async e => {
+  e.preventDefault();
+  const erroEl = document.getElementById("configErro"); erroEl.textContent = "";
+  const payload = {};
+  const senha = document.getElementById("cSenha").value;
+  if (senha) payload.admin_senha = senha;
+  try{
+    await salvarConfigAPI(payload);
+    document.getElementById("dlgConfig").close();
+    await render();
+  }catch(err){ erroEl.textContent = err.message; }
+});
+
+/* ===== Exportar CSV ===== */
+document.getElementById("btnExportar").addEventListener("click", () => {
+  if (USE_API){ window.location.href = "/api/exportar"; return; }
+  const todas = carregarReservasLocal().sort((a,b)=>(a.data+a.turno).localeCompare(b.data+b.turno));
+  if (!todas.length){ alert("Sem reservas para exportar."); return; }
+  const linhas = [["Data","Turno","Solicitante","Atendente","Finalidade"]];
+  todas.forEach(r => linhas.push([
+    formatarData(r.data), getTurno(r.turno)?.nome || r.turno,
+    r.nome, r.atendente || "", r.finalidade
+  ]));
+  const csv = linhas.map(l => l.map(c => '"' + String(c).replace(/"/g,'""') + '"').join(";")).join("\r\n");
+  const blob = new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "reservas-laboratorio-uab.csv"; a.click();
+  URL.revokeObjectURL(url);
+});
+
+/* ===== Encerrar ===== */
+document.getElementById("btnSair").addEventListener("click", async () => {
+  if (!USE_API){ alert("Esta opção só existe no modo servidor."); return; }
+  if (!confirm("Isso encerrará o servidor na máquina. Continuar?")) return;
+  try{
+    await api("/api/sair",{method:"POST"});
+    document.body.innerHTML = '<div style="padding:60px;text-align:center;font-family:system-ui"><h2>Sistema encerrado</h2><p>Você já pode fechar esta janela.</p></div>';
+  }catch(e){ alert(e.message); }
+});
+
+/* ===== Navegação ===== */
+document.getElementById("data").addEventListener("change", e => {
+  estado.data = e.target.value || hojeISO(); render();
+});
+document.getElementById("btnHoje").addEventListener("click", () => {
+  estado.data = hojeISO();
+  document.getElementById("data").value = estado.data;
+  render();
+});
+function mudarDia(delta){
+  estado.data = somarDias(estado.data, delta);
+  document.getElementById("data").value = estado.data;
+  render();
+}
+document.getElementById("btnAnterior").addEventListener("click", () => mudarDia(-1));
+document.getElementById("btnProximo").addEventListener("click", () => mudarDia(1));
+
+document.querySelectorAll("[data-fechar]").forEach(b => {
+  b.addEventListener("click", () => b.closest("dialog").close());
+});
+
+/* ===== Init ===== */
+(async function init(){
+  await detectarBackend();
+  atualizarAdminUI();
+  document.getElementById("data").value = estado.data;
+  await render();
+})();
+</script>
+</body>
+</html>

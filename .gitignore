@@ -1,0 +1,15 @@
+# Banco de dados e configurações locais
+reservas.db
+config.json
+reserva.log
+*.db
+
+# Pastas geradas automaticamente
+dist/
+build/
+__pycache__/
+*.spec
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
